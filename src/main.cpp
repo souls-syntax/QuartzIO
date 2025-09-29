@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 struct DiskInfo {
     std::string name;
