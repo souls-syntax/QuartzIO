@@ -1,6 +1,5 @@
 // QuartzIO let's go
 
-#include <bits/stdc++.h>
 #include <iostream>
 #include <array>
 #include <string>
