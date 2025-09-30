@@ -1,39 +1,71 @@
 // QuartzIO let's go
 #include "command.h"
-#include "lsblk_parser.h"
+#include "modules/storage/StorageModule.h"
+#include "modules/IModule.h"
+
 #include <iostream>
 #include <vector>
+#include <string>
+#include <memory>
+
+void print_usage() {
+    std::cout << "QuartzIO Diagnostic Tool" << "\n";
+    std::cout << "Usage: quartzio <flag>" << "\n";
+    std::cout << "Available flags:" << "\n";
+    std::cout << " --storage Show drive and S.M.A.R.T info" << "\n";
+}
+
 
 // Main function to just connect pipelines
-int main() {
-    try
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        print_usage();
+        return 1;
+    }
+
+    std::vector<std::unique_ptr<IModule>> modules;
+    modules.push_back(std::make_unique<StorageModule>());
+
+    std::string user_flag = argv[1];
+    bool module_found = false;
+
+    for (const auto& module : modules)
     {
-        std::string cmd_output = exec("lsblk -d -n -o NAME,MODEL,SIZE");
-
-        if (cmd_output.empty()) 
-        {
-            std::cerr << "No storage device found or lsblk command failed." << "\n";
-            return 1;
-        }
-
-        std::cout << "--- Parsing lsblk output ---" << "\n";
-
-        std::vector<DiskInfo> detected_disks = parse_lsblk(cmd_output);
-
-        for (const auto& disk: detected_disks)
+        /* code */
+        if (user_flag == module->getFlag())
         {
             /* code */
-            std::cout << "Device: /dev/" << disk.name << "\n";
-            std::cout << " Model: " << (disk.model.empty() ? "N/A" : disk.model) << "\n";
-            std::cout << "  Size: " << disk.size << "\n";
-            std::cout << "======================================" << "\n";
+            module->run();
+            module_found = true;
+            break;
         }
         
-        
     }
-    catch(const std::runtime_error& e)
+
+    if (!module_found)
     {
-        std::cerr << "Error: " << e.what() << '\n';
+        /* code */
+        std::cerr << "Error: Unknown flag `" << user_flag << "`" << "\n";
     }
+
     return 0;
+    // if (argc < 2)
+    // {
+    //     /* code */
+    //     std::cerr << "Usage: quartzio [--storage || -s] \n";
+    //     return 1;
+    // }
+    // std::string command = argv[1];
+
+    // if (command == "--storage" || command == "--storage")
+    // {
+    //     /* code */
+    //     printDiskInfo();
+    // }
+    // else {
+    //     std::cerr << "Error: Unknown command `" << command << "`" << "\n";
+    //     return 1;
+    // }
+
+    // return 0;
 }
