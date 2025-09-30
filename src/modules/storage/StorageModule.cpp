@@ -6,6 +6,16 @@
 #include <string>
 #include <iostream>
 
+//-------- AI edit credit copilot -------//
+#ifdef _WIN32
+// Windows does not have getuid(), define a stub or handle accordingly
+inline int getuid() { return 0; }
+#else
+#include <unistd.h>
+#endif
+//-------- AI edit ends ------//
+
+
 // Parsing the output of lsblk command.
 // The lsblk command we will be executing is "lsblk -d -n -o NAME,MODEL,SIZE"
 //result will be like
@@ -147,8 +157,13 @@ void StorageModule::run() {
 
     for(auto& disk : disks) {
         bool smart_ok = true;
+        if (getuid() != 0) {
+        std::cout << "SMART data: (Not available, please run with sudo)\n";
+        smart_ok = false;
+        
+    } else {
         try {
-            std::string smartctl_cmd = "sudo smartctl -a /dev/" + disk.name + " 2>&1";
+            std::string smartctl_cmd = "smartctl -a /dev/" + disk.name + " 2>&1";
             std::string smartctl_output = exec(smartctl_cmd.c_str());
             if (smartctl_output.find("Permission denied") != std::string::npos ||
                 smartctl_output.find("Command not found") != std::string::npos)
@@ -163,6 +178,7 @@ void StorageModule::run() {
         catch (...) {
             smart_ok = false;
         }
+    }
 
         std::cout << "===============================" << "\n";
         std::cout << "Drive:             " + disk.name << "\n";
