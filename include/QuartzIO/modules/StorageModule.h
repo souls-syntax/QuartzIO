@@ -1,6 +1,7 @@
 #ifndef STORAGE_MODULE_H
 #define STORAGE_MODULE_H
-#include "IModule.h"
+#include <QuartzIO/IModule.h>
+
 #include <string>
 #include <vector>
 struct DiskInfo;
