@@ -1,6 +1,6 @@
-#include "StorageModule.h"
-#include "../core/command.h"
-#include "../../include/QuartzIO/datatypes.h"
+#include <QuartzIO/modules/StorageModule.h>
+#include <QuartzIO/core/command.h>
+#include <QuartzIO/datatypes.h>
 #include <sstream>
 #include <vector>
 #include <string>

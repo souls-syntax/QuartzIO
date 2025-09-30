@@ -1,4 +1,4 @@
-#include "command.h"
+#include <QuartzIO/core/command.h>
 #include <array>
 #include <cstdio>
 #include <memory>

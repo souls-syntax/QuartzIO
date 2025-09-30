@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <variant>
-#include "../../include/QuartzIO/datatypes.h"
+#include <QuartzIO/datatypes.h>
 
 class IModule {
 public:

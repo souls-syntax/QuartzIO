@@ -1,7 +1,7 @@
 // QuartzIO let's go
-#include "command.h"
-#include "modules/storage/StorageModule.h"
-#include "modules/IModule.h"
+#include <QuartzIO/core/command.h>
+#include <QuartzIO/modules/StorageModule.h>
+#include <QuartzIO/IModule.h>
 
 #include <iostream>
 #include <vector>
