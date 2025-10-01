@@ -51,7 +51,8 @@ Filesystem               Size           Used           Available      Use%
 * Linux system.
 * CMake >= 3.15.
 * C++ 17 compiler (eg. g++, clang++).
-* lsblk command & smartctl (from util-linux package).
+* lsblk command (from util-linux package).
+* smartctl (from smartmontools package)
   
 ### Install
 
