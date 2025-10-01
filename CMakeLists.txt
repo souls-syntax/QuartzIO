@@ -12,7 +12,7 @@ set(SOURCES
     src/modules/filesystem/FileSystemModule.cpp
 )
 
-add_executable(QuartzIO ${SOURCES})
+add_executable(quartzio ${SOURCES})
 
 # Tell the compiler to look for headers in the "include" directory
 target_include_directories(QuartzIO PUBLIC 
