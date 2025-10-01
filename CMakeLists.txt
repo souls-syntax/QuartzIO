@@ -6,9 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # List all your source files here
 set(SOURCES
+    src/main.cpp
     src/core/command.cpp
     src/modules/storage/StorageModule.cpp
-    src/main.cpp
+    src/modules/filesystem/FileSystemModule.cpp
 )
 
 add_executable(QuartzIO ${SOURCES})
