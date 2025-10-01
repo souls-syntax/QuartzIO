@@ -18,3 +18,5 @@ add_executable(quartzio ${SOURCES})
 target_include_directories(quartzio PUBLIC 
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
+
+install(TARGETS quartzio DESTINATION bin)
