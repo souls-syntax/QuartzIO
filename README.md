@@ -64,7 +64,7 @@ cd ~/.local/share/QuartzIO
 
 This installs the quartzio binary into ~/.local/bin:
 
-```cmake
+```bash
 cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/.local
 cmake --build build
 cmake --install build
@@ -88,7 +88,7 @@ quartzio --fs
 
 ### System-wide install (for all users)
 
-```cmake
+```bash
 cmake -B build
 cmake --build build
 sudo cmake --install build
@@ -139,7 +139,7 @@ If installed system-wide:
 
 ## Project Structure
 
-```css
+```text
 QuartzIO/
 ├── CMakeLists.txt
 ├── include/
