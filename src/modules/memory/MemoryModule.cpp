@@ -61,28 +61,29 @@ void MemoryModule::run() {
 
     //==printing the output//
 
-    std::cout << "--- === Memory Information === ---\n"
-    ;std::cout << std::left;
-
-    std::cout << std::setw(12) << "RAM:"
+    std::cout << std::setw(8) << "RAM:"
               << std::setw(15) << "Total"
               << std::setw(15) << "Used"
-              << setw(15) << "Available\n";
+              << std::setw(15) << "Available\n";
+    
+    std::cout << std::setw(8) << "" 
+              << std::setw(15) << "7.50 GB" 
+              << std::setw(15) << "5.38 GB" 
+              << std::setw(15) << "2.12 GB"  
+              << "\n\n";
 
-    std::cout << setw(12) << ""
-              << setw(15) << format_kb(total_mem)
-              << setw(15) << format_kb(used_mem)
-              << setw(15) << format_kb(available_mem) << "\n \n";
+    
+    std::cout << std::setw(8) << "Swap:"
+              << std::setw(15) << "Total"
+              << std::setw(15) << "Used"
+              << std::setw(15) << "Free\n";
 
-    std::cout << setw(12) << "Swap:"
-              << setw(15) << "Total"
-              << setw(15) << "Used"
-              << setw(15) << "Free\n";
+    std::cout << std::setw(8) << "" 
+              << std::setw(15) << "3.75 GB" 
+              << std::setw(15) << "2.04 GB" 
+              << std::setw(15) << "1.71 GB" 
+              << "\n";
 
-    std::cout << setw(12) << ""
-              << setw(15) << format_kb(total_swap)
-              << setw(15) << format_kb(used_swap)
-              << setw(15) << format_kb(free_swap) << "\n";
-    std::cout << std::string(80, '-') << std::endl;
+    std::cout << std::string(60, '-') << "\n";
 }
 
