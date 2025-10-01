@@ -10,7 +10,7 @@ It also uses c++ builtin filesystem module for giving information about current 
 
 Future plans include: 
 * Addition of more tools for making and general purpose inspection tool
-* Wrapping the whole thing in either bash for easier access and system-wide installation.
+* Developing a user-friendly installer script (install.sh) to automate the cloning and building process.
 * Providing a Qt-based GUI view for easier visualization.
 * Optional JSON/TUI output modes for integration with scripts or dashboards.
 
