@@ -47,7 +47,7 @@ cmake --build .
 
 ### Run
 ```bash
-./QuartzIO
+./QuartzIO --storage
 ```
 
 ## Project Structure
@@ -55,14 +55,29 @@ cmake --build .
 ```css
 QuartzIO/
 ├── CMakeLists.txt
+│
 ├── include/
-│   ├── command.h
-│   └── lsblk_parser.h
-├── src/
-│   ├── main.cpp
-│   ├── command.cpp
-│   └── lsblk_parser.cpp
-└── README.md
+│   └── QuartzIO/
+│       ├── datatypes.h           # Public: Shared data structure
+│       ├── IModule.h             # Public: Core interface for all modules
+│       │
+│       ├── core/
+│       │   └── command.h         # Public: Core utility interface
+│       │
+│       └── modules/
+│           └── StorageModule.h   # Public: Interface for a specific module
+│           └── FileSystemModule.h
+└── src/
+    ├── main.cpp                # Implements the application logic
+    │
+    ├── core/
+    │   └── command.cpp         # Implements the command utility
+    │
+    └── modules/
+        └── storage/
+        |    └── StorageModule.cpp # Implements the storage module
+        └── filesystem/
+            └── FileSystemModule.cpp # Implement FileSystem information.  
 ```
 
 ![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)

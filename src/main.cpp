@@ -1,6 +1,7 @@
 // QuartzIO let's go
 #include <QuartzIO/core/command.h>
 #include <QuartzIO/modules/StorageModule.h>
+#include <QuartzIO/modules/FileSystemModule.h>
 #include <QuartzIO/IModule.h>
 
 #include <iostream>
@@ -25,6 +26,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::unique_ptr<IModule>> modules;
     modules.push_back(std::make_unique<StorageModule>());
+    modules.push_back(std::make_unique<FileSystemModule>());
 
     std::string user_flag = argv[1];
     bool module_found = false;
