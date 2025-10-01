@@ -10,6 +10,7 @@ set(SOURCES
     src/core/command.cpp
     src/modules/storage/StorageModule.cpp
     src/modules/filesystem/FileSystemModule.cpp
+    src/modules/memory/MemoryModule.cpp
 )
 
 add_executable(quartzio ${SOURCES})

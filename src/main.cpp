@@ -3,6 +3,7 @@
 #include <QuartzIO/modules/StorageModule.h>
 #include <QuartzIO/modules/FileSystemModule.h>
 #include <QuartzIO/IModule.h>
+#include <QuartzIO/modules/MemoryModule.h>
 
 #include <iostream>
 #include <vector>
@@ -17,6 +18,7 @@ void print_usage() {
     std::cout << "Available flags:" << "\n";
     std::cout << " --storage        Show drive and S.M.A.R.T info" << "\n";
     std::cout << " --fs             Show the total space available and free space in each mount" << "\n";
+    std::cout << " --mem            Show the information about memory";
     std::cout << " --version        Show Version \n";
     std::cout << " --update         Update QuartzIO (git pull + rebuild)\n";
 }
@@ -52,12 +54,11 @@ int main(int argc, char* argv[]) {
         return ret;
     }
     
-
-    
-
+    // Main functionality engine starts.
     std::vector<std::unique_ptr<IModule>> modules;
     modules.push_back(std::make_unique<StorageModule>());
     modules.push_back(std::make_unique<FileSystemModule>());
+    modules.push_back(std::make_unique<MemoryModule>());
 
     bool module_found = false;
 
@@ -70,15 +71,12 @@ int main(int argc, char* argv[]) {
             module->run();
             module_found = true;
             break;
-        }
-        
+        }   
     }
-
     if (!module_found)
     {
         /* code */
         std::cerr << "Error: Unknown flag `" << user_flag << "`" << "\n";
     }
-
     return 0;
 }
