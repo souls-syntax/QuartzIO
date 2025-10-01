@@ -10,7 +10,7 @@
 
 using std::setw;
 
-std::string format_bytes(uintmax_t bytes) {
+std::string format_kb(uintmax_t bytes) {
     if (bytes == 0) return "0.0 B";
     const char* suffix[] = {"KB", "MB", "GB", "TB"};
     int i = 0;
@@ -70,9 +70,9 @@ void MemoryModule::run() {
               << setw(15) << "Available\n";
 
     std::cout << setw(12) << ""
-              << setw(15) << format_bytes(total_mem)
-              << setw(15) << format_bytes(used_mem)
-              << setw(15) << format_bytes(available_mem) << "\n \n";
+              << setw(15) << format_kb(total_mem)
+              << setw(15) << format_kb(used_mem)
+              << setw(15) << format_kb(available_mem) << "\n \n";
 
     std::cout << setw(12) << "Swap:"
               << setw(15) << "Total"
@@ -80,9 +80,9 @@ void MemoryModule::run() {
               << setw(15) << "Free\n";
 
     std::cout << setw(12) << ""
-              << setw(15) << format_bytes(total_swap)
-              << setw(15) << format_bytes(used_swap)
-              << setw(15) << format_bytes(free_swap) << "\n";
+              << setw(15) << format_kb(total_swap)
+              << setw(15) << format_kb(used_swap)
+              << setw(15) << format_kb(free_swap) << "\n";
     std::cout << std::string(80, '-') << std::endl;
 }
 
