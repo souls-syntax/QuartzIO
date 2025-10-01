@@ -1,4 +1,5 @@
 ![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
+![Platform: Linux](./asset/linux.svg)
 # QuartzIO
 
 QuartzIO is a lightweight C++ utility for enumerating and inspecting storage devices on Linux.  
@@ -15,27 +16,36 @@ Future plans include:
 
 ## Features (Current)
 
-* Executes `lsblk -d -n -o NAME,MODEL,SIZE` via a safe wrapper.
-* Executes `smartctl -a /dev/disk.name` via a safe wrapper.
-* Uses `ifstream mounts_file()` to get the data regarding file system and produce human readable output.
+* Device Discovery: Lists all physical storage devices with their model and size
+* S.M.A.R.T. Health Status: Retrieves and displays detailed health information for each drive, including temperature, power-on hours, and overall health assessment.
+* Filesystem Usage: Shows the total size, used space, and available space for all mounted filesystems.
 * Parses command output into structured DiskInfo objects.
 * Displays detected devices with model and size information.
 
 Example output
 
 ```cpp
---- Parsing lsblk output ---
-Device: /dev/nvme0n1
- Model: SK hynix BC711 HFHS12GD******
-  Size: 476.9G
-======================================
-Device: /dev/zram0
- Model: N/A
-  Size: 3.7G
-======================================
+$ quartzio --storage
+===============================
+Drive:           nvme0n1
+Model Number:    SK hynix BC711
+Size:            476.9G
+Serial Number:   XXXXXXXXXXXX
+Firmware:        XXXXXXXX
+Health:          PASSED
+Temperature:     35 Celsius
+Power On Hours:  1234
+===============================
+
+$ quartzio --fs
+Filesystem               Size           Used           Available      Use%
+--------------------------------------------------------------------------------
+/                        29.80 GB       15.21 GB       14.59 GB       51%
+/boot                    975.91 MB      250.00 MB      725.91 MB      25%
+/home                    400.00 GB      150.00 GB      250.00 GB      37%
 ```
 
-## Build & Run
+## Install & Run
 
 ### Requirements
 * Linux system.
@@ -43,47 +53,113 @@ Device: /dev/zram0
 * C++ 17 compiler (eg. g++, clang++).
 * lsblk command & smartctl (from util-linux package).
   
-### Build
+### Install
+
+Clone into a location you control ( we'll use `~/.local/share/QuartzIO` for the user install example):
 ```bash
-git clone https://github.com/yourusername/QuartzIO.git
-cd QuartzIO
-cmake -B build && cd build
-cmake --build .
+git clone https://github.com/yourusername/QuartzIO.git ~/.local/share/QuartzIO
+cd ~/.local/share/QuartzIO
+```
+#### Build & user-install (no sudo)
+
+This installs the quartzio binary into ~/.local/bin:
+
+```cmake
+cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/.local
+cmake --build build
+cmake --install build
+```
+
+Make sure ~/.local/bin is in your PATH (add to ~/.profile or ~/.bashrc or ~/.zshrc if needed):
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
 ### Run
+
+You should now be able to run
+
 ```bash
-./QuartzIO [ --storage, --fs]
+quartzio --storage
+
+quartzio --fs
 ```
+
+### System-wide install (for all users)
+
+```cmake
+cmake -B build
+cmake --build build
+sudo cmake --install build
+```
+This installs the binary to /usr/local/bin/ by default.
+
+## Update
+
+Simple self-update (requires repo to be at ~/.local/share/QuartzIO and git, cmake installed):
+
+```bash
+quartzio --update
+```
+
+### Manual update (if you prefer manual steps):
+```bash
+cd ~/.local/share/QuartzIO
+git pull
+cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/.local
+cmake --build build
+cmake --install build
+```
+
+## Uninstall
+
+User uninstall (remove binary only):
+
+`rm -f ~/.local/bin/quartzio`
+
+If installed system-wide:
+
+`sudo rm -f /usr/local/bin/quartzio`
+
+## Troubleshooting
+
+#### `quartzio --update` fails:
+  * Ensure the repo was cloned into ~/.local/share/QuartzIO.
+
+  * Ensure git, cmake, and a compiler (g++/clang++) are installed.
+
+  * Run the manual update steps to see the failing command and error output.
+
+#### `quartzio: command not found`:
+
+  * Confirm ~/.local/bin is in your $PATH.
+
+  * Make sure you installed with -DCMAKE_INSTALL_PREFIX=$HOME/.local.
 
 ## Project Structure
 
 ```css
 QuartzIO/
 ├── CMakeLists.txt
-│
 ├── include/
 │   └── QuartzIO/
-│       ├── datatypes.h           # Public: Shared data structure
-│       ├── IModule.h             # Public: Core interface for all modules
-│       │
+│       ├── IModule.h
+│       ├── datatypes.h
 │       ├── core/
-│       │   └── command.h         # Public: Core utility interface
-│       │
+│       │   └── command.h
 │       └── modules/
-│           └── StorageModule.h   # Public: Interface for Storage specific module
-│           └── FileSystemModule.h # Public: Interface for fs module.
+│           ├── FileSystemModule.h
+│           └── StorageModule.h
 └── src/
-    ├── main.cpp                # Implements the application logic
-    │
+    ├── main.cpp
     ├── core/
-    │   └── command.cpp         # Implements the command utility
-    │
+    │   └── command.cpp
     └── modules/
+        ├── filesystem/
+        │   └── FileSystemModule.cpp
         └── storage/
-        |    └── StorageModule.cpp # Implements the storage module
-        └── filesystem/
-            └── FileSystemModule.cpp # Implement FileSystem information.  
+            └── StorageModule.cpp 
 ```
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
