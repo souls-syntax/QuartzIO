@@ -15,6 +15,6 @@ set(SOURCES
 add_executable(quartzio ${SOURCES})
 
 # Tell the compiler to look for headers in the "include" directory
-target_include_directories(QuartzIO PUBLIC 
+target_include_directories(quartzio PUBLIC 
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
