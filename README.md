@@ -58,7 +58,7 @@ Filesystem               Size           Used           Available      Use%
 
 Clone into a location you control ( we'll use `~/.local/share/QuartzIO` for the user install example):
 ```bash
-git clone https://github.com/yourusername/QuartzIO.git ~/.local/share/QuartzIO
+git clone https://github.com/souls-syntax/QuartzIO ~/.local/share/QuartzIO
 cd ~/.local/share/QuartzIO
 ```
 #### Build & user-install (no sudo)
