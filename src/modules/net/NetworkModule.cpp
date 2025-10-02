@@ -47,6 +47,11 @@ void NetworkModule::run(const Options &opts)
         try
         {
             std::string speedtest_output = exec("speedtest-cli --simple");
+            if (speedtest_output.find("Ping") == std::string::npos ||
+                speedtest_output.find("Download") == std::string::npos ||
+                speedtest_output.find("Upload") == std::string::npos) {
+                throw std::runtime_error("speedtest-cli output invalid or tool not installed.");
+                }
 
             std::string ping = parse_simple_output(speedtest_output, "Ping");
             std::string download = parse_simple_output(speedtest_output, "Download");
