@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <cstdint>
+#include <vector>
 // Holds disk information collected from lsblk and smartctl
 struct DiskInfo {
     std::string name;
