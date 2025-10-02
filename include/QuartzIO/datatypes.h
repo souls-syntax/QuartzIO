@@ -30,6 +30,15 @@ struct KernelInfo {
     uintmax_t      uptime_seconds;
 };
 
+
+struct CpuInfo {
+    std::string model_name;
+    std::string vendor_id;
+    int logical_cores = 0;
+    int physical_cores = 0;
+    double utilization = 0.0;
+};
+
 enum class OutputFormat {
     Default, // The normal pretty-printed table
     Raw,     // The simple key=value format

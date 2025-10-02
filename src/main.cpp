@@ -6,6 +6,7 @@
 #include <QuartzIO/modules/MemoryModule.h>
 #include <QuartzIO/datatypes.h>
 #include <QuartzIO/modules/KernelModule.h>
+#include <QuartzIO/modules/CpuModule.h>
 
 
 #include <iostream>
@@ -79,6 +80,7 @@ int main(int argc, char* argv[]) {
     modules.push_back(std::make_unique<FileSystemModule>());
     modules.push_back(std::make_unique<MemoryModule>());
     modules.push_back(std::make_unique<KernelModule>());
+    modules.push_back(std::make_unique<CpuModule>());
 
     bool module_found = false;
 
