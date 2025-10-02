@@ -28,6 +28,13 @@ From S.M.A.R.T. status to live CPU utilization and network speed tests, QuartzIO
 
    * Script-Friendly Output: All modules support `--json` and `--raw` flags for easy integration with scripts and other tools.
 
+## Known Limitations
+
+This is most likely not a concern unless you are using it for some complex work.
+
+1. CPU module may not give correct output if there are multiple sockets with the same `core_id`.  
+2. CPU utilization measurement currently blocks the main thread for ~200ms. This can be adjusted in `src/modules/CpuModule.cpp` depending on your configuration and needs.
+
 ### Example Usage
 
 #### Get a summary of your CPU, including live utilization:
@@ -72,7 +79,7 @@ Upload:      54.32 Mbit/s
 
 #### Get memory information in JSON format:
 
-```json
+```bash
 $ quartzio --mem --json
 {
   "RAM": {
