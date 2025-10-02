@@ -14,17 +14,25 @@
 #include <string>
 #include <memory>
 
-#define QUARTZIO_VERSION "0.1.2"
+#define QUARTZIO_VERSION "1.0.0"
 
 void print_usage() {
-    std::cout << "QuartzIO Diagnostic Tool" << "\n";
-    std::cout << "Usage: quartzio <flag>" << "\n";
-    std::cout << "Available flags:" << "\n";
-    std::cout << " --storage        Show drive and S.M.A.R.T info" << "\n";
-    std::cout << " --fs             Show the total space available and free space in each mount" << "\n";
-    std::cout << " --mem            Show the information about memory";
-    std::cout << " --version        Show Version \n";
-    std::cout << " --update         Update QuartzIO (git pull + rebuild)\n";
+    std::cout << "QuartzIO Diagnostic Tool v" << QUARTZIO_VERSION << "\n";
+    std::cout << "Usage: quartzio <flag> [format|--test]\n\n";
+    std::cout << "Available flags:\n";
+    std::cout << "  --storage        Show drive and S.M.A.R.T info\n";
+    std::cout << "  --fs             Show filesystem space\n";
+    std::cout << "  --mem            Show memory and swap usage\n";
+    std::cout << "  --kernel         Show OS, kernel, and uptime info\n";
+    std::cout << "  --cpu            Show CPU model, cores, and live utilization\n";
+    std::cout << "  --net            Show network interfaces and IP addresses\n";
+    std::cout << "    --test         (With --net) Runs an active internet speed test\n\n";
+    std::cout << "  --version        Show version information\n";
+    std::cout << "  --update         Attempts to self-update from git\n\n";
+
+    std::cout << "Available formats (use after a flag):\n";
+    std::cout << "  --raw            Simple key=value output for scripting\n";
+    std::cout << "  --json           JSON formatted output for applications\n";
 }
 
 

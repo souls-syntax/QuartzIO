@@ -14,7 +14,7 @@ std::string parse_os_release() {
     {
         if (line.rfind("PRETTY_NAME=", 0)==0)
         {
-            std::string value = line.substr(line.find("=" + 1));
+            std::string value = line.substr(line.find("=")+1);
             //remove quotes as they spoil
             if (value.front() == '"' && value.back() == '"')
             {
