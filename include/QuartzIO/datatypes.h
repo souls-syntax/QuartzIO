@@ -12,6 +12,7 @@ struct DiskInfo {
     std::string health;
     std::string temperature;
     std::string powerOnHours;
+    bool smartOk = false;
 };
 
 

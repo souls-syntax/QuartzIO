@@ -162,7 +162,6 @@ void StorageModule::run(const Options &opts)
         bool smart_ok = true;
         if (getuid() != 0)
         {
-            std::cout << "SMART data: (Not available, please run with sudo)\n";
             smart_ok = false;
         }
         else
@@ -179,6 +178,7 @@ void StorageModule::run(const Options &opts)
                 }
                 else
                 {
+                    disk.smartOk = true;
                     parse_smartctl(smartctl_output, disk);
                 }
             }
@@ -187,6 +187,7 @@ void StorageModule::run(const Options &opts)
                 smart_ok = false;
             }
         }
+    }
 
         if (opts.format == OutputFormat::Json)
         {
@@ -200,8 +201,8 @@ void StorageModule::run(const Options &opts)
                 std::cout << "      \"device\": \"" << disk.name << "\",\n";
                 std::cout << "      \"model\": \"" << disk.model << "\",\n";
                 std::cout << "      \"size\": \"" << disk.size << "\",\n";
-                std::cout << "      \"smart_available\": " << (smart_ok ? "true" : "false");
-                if (smart_ok)
+                std::cout << "      \"smart_available\": " << (disk.smartOk ? "true" : "false");
+                if (disk.smartOk)
                 {
                     std::cout << ",\n";
                     std::cout << "      \"serial_number\": \"" << disk.serialNumber << "\",\n";
@@ -223,8 +224,8 @@ void StorageModule::run(const Options &opts)
             {
                 std::cout << disk.name << ".model=" << disk.model << "\n";
                 std::cout << disk.name << ".size=" << disk.size << "\n";
-                std::cout << disk.name << ".smart_available=" << (smart_ok ? "true" : "false") << "\n";
-                if (smart_ok)
+                std::cout << disk.name << ".smart_available=" << (disk.smartOk ? "true" : "false") << "\n";
+                if (disk.smartOk)
                 {
                     std::cout << disk.name << ".serial_number=" << disk.serialNumber << "\n";
                     std::cout << disk.name << ".firmware=" << disk.firmwareVersion << "\n";
@@ -244,7 +245,7 @@ void StorageModule::run(const Options &opts)
             std::cout << std::left << std::setw(20) << "Model:" << disk.model << "\n";
             std::cout << std::left << std::setw(20) << "Size:" << disk.size << "\n";
 
-            if (smart_ok)
+            if (disk.smartOk)
             {
                 std::cout << "---------------- S.M.A.R.T. --------------\n";
                 std::cout << std::left << std::setw(20) << "Serial Number:" << disk.serialNumber << "\n";
@@ -260,4 +261,3 @@ void StorageModule::run(const Options &opts)
             std::cout << "========================================\n";
         }
     }
-}
