@@ -23,6 +23,12 @@ struct MountInfo {
     int use_percentage;
 };
 
+struct KernelInfo {
+    std::string os_release;
+    std::string kernel_version;
+    std::string uptime;
+};
+
 enum class OutputFormat {
     Default, // The normal pretty-printed table
     Raw,     // The simple key=value format
