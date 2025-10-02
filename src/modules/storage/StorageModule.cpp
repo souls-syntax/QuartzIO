@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
-
+#include <iomanip>
 //-------- AI edit credit copilot -------//
 #ifdef _WIN32
 // Windows does not have getuid(), define a stub or handle accordingly
@@ -150,7 +150,7 @@ const char* StorageModule::getFlag() const {
 
 // ======Printing The Values======= //
 
-void StorageModule::run() {
+void StorageModule::run(const Options& opts) {
     std::string lsblk_output = exec("lsblk -d -n -o NAME,MODEL,SIZE");
 
     auto disks = parse_lsblk(lsblk_output);
@@ -180,24 +180,64 @@ void StorageModule::run() {
         }
     }
 
-        std::cout << "===============================" << "\n";
-        std::cout << "Drive:             " + disk.name << "\n";
-        std::cout << "Model Number:      " + disk.model << "\n";
-        std::cout << "Size:              " + disk.size << "\n";
-        
-        if (smart_ok)
-        {
-            /* code */
-            std::cout << "Serial Number:              " + disk.serialNumber << "\n";
-            std::cout << "Firmware:              " + disk.firmwareVersion << "\n";
-            std::cout << "Health:              " + disk.health << "\n";
-            std::cout << "Temperature:              " + disk.temperature << "\n";
-            std::cout << "Power On Hours:              " + disk.powerOnHours << "\n";
+        if (opts.format == OutputFormat::Json) {
+        std::cout << "{\n  \"disks\": [\n";
+        bool first_disk = true;
+        for (const auto& disk : disks) {
+            if (!first_disk) std::cout << ",\n";
+            std::cout << "    {\n";
+            std::cout << "      \"device\": \"" << disk.name << "\",\n";
+            std::cout << "      \"model\": \"" << disk.model << "\",\n";
+            std::cout << "      \"size\": \"" << disk.size << "\",\n";
+            std::cout << "      \"smart_available\": " << (smart_ok ? "true" : "false");
+            if (smart_ok) {
+                std::cout << ",\n";
+                std::cout << "      \"serial_number\": \"" << disk.serialNumber << "\",\n";
+                std::cout << "      \"firmware\": \"" << disk.firmwareVersion << "\",\n";
+                std::cout << "      \"health\": \"" << disk.health << "\",\n";
+                std::cout << "      \"temperature\": \"" << disk.temperature << "\",\n";
+                std::cout << "      \"power_on_hours\": \"" << disk.powerOnHours << "\"";
+            }
+            std::cout << "\n    }";
+            first_disk = false;
         }
-        else {
-            std::cout << "SMART data:        (Not available / need sude) \n"; 
-        }
+        std::cout << "\n  ]\n}\n";
+        return;
+    }
 
-        std::cout << "===============================" << "\n";
+    if (opts.format == OutputFormat::Raw) {
+        for (const auto& disk : disks) {
+            std::cout << disk.name << ".model=" << disk.model << "\n";
+            std::cout << disk.name << ".size=" << disk.size << "\n";
+            std::cout << disk.name << ".smart_available=" << (smart_ok ? "true" : "false") << "\n";
+            if (smart_ok) {
+                std::cout << disk.name << ".serial_number=" << disk.serialNumber << "\n";
+                std::cout << disk.name << ".firmware=" << disk.firmwareVersion << "\n";
+                std::cout << disk.name << ".health=" << disk.health << "\n";
+                std::cout << disk.name << ".temperature=" << disk.temperature << "\n";
+                std::cout << disk.name << ".power_on_hours=" << disk.powerOnHours << "\n";
+            }
+        }
+        return;
+    }
+
+    // Default, pretty-printed output
+    for(const auto& disk : disks) {
+        std::cout << "========================================\n";
+        std::cout << std::left << std::setw(20) << "Drive:" << disk.name << "\n";
+        std::cout << std::left << std::setw(20) << "Model:" << disk.model << "\n";
+        std::cout << std::left << std::setw(20) << "Size:" << disk.size << "\n";
+
+        if (smart_ok) {
+            std::cout << "---------------- S.M.A.R.T. --------------\n";
+            std::cout << std::left << std::setw(20) << "Serial Number:" << disk.serialNumber << "\n";
+            std::cout << std::left << std::setw(20) << "Firmware:" << disk.firmwareVersion << "\n";
+            std::cout << std::left << std::setw(20) << "Health Status:" << disk.health << "\n";
+            std::cout << std::left << std::setw(20) << "Temperature:" << disk.temperature << "\n";
+            std::cout << std::left << std::setw(20) << "Power On Hours:" << disk.powerOnHours << "\n";
+        } else {
+             std::cout << std::left << std::setw(20) << "S.M.A.R.T. Status:" << "(Not available, run with sudo)\n";
+        }
+        std::cout << "========================================\n";
     }
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include <cstdint>
 // Holds disk information collected from lsblk and smartctl
 struct DiskInfo {
     std::string name;
@@ -13,6 +13,15 @@ struct DiskInfo {
     std::string powerOnHours;
 };
 
+
+struct MountInfo {
+    std::string mount_point;
+    std::string device;
+    uintmax_t total_bytes;
+    uintmax_t used_bytes;
+    uintmax_t available_bytes;
+    int use_percentage;
+};
 
 enum class OutputFormat {
     Default, // The normal pretty-printed table

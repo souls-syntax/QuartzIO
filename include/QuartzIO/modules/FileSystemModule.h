@@ -7,7 +7,7 @@ class FileSystemModule : public IModule {
     public:
         const char* getFlag() const override;
 
-        void run() override;
+        void run(const Options& opts) override;
 };
 
 #endif
