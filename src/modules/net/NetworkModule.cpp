@@ -98,6 +98,49 @@ void NetworkModule::run(const Options &opts)
         return;
     }
 
+
+    if (opts.format == OutputFormat::Json) {
+        std::cout << "{\n  \"interfaces\": [\n";
+        bool first_iface = true;
+        for (const auto& iface : interfaces) {
+            if (!first_iface) std::cout << ",\n";
+            std::cout << "    {\n";
+            std::cout << "      \"name\": \"" << iface.name << "\",\n";
+            std::cout << "      \"state\": \"" << iface.state << "\",\n";
+            std::cout << "      \"mac_address\": \"" << iface.mac_address << "\",\n";
+            std::cout << "      \"addresses\": [\n";
+            bool first_addr = true;
+            for (const auto& addr : iface.addresses) {
+                if (!first_addr) std::cout << ",\n";
+                std::cout << "        {\n";
+                std::cout << "          \"family\": \"" << addr.family << "\",\n";
+                std::cout << "          \"address\": \"" << addr.address << "\",\n";
+                std::cout << "          \"prefix_length\": " << addr.prefix_length << "\n";
+                std::cout << "        }";
+                first_addr = false;
+            }
+            std::cout << "\n      ]\n    }";
+            first_iface = false;
+        }
+        std::cout << "\n  ]\n}\n";
+        return;
+    }
+
+    if (opts.format == OutputFormat::Raw) {
+        for (const auto& iface : interfaces) {
+            std::cout << iface.name << ".state=" << iface.state << "\n";
+            std::cout << iface.name << ".mac_address=" << iface.mac_address << "\n";
+            int count = 0;
+            for (const auto& addr : iface.addresses) {
+                std::cout << iface.name << ".address_" << count << ".family=" << addr.family << "\n";
+                std::cout << iface.name << ".address_" << count << ".ip=" << addr.address << "\n";
+                std::cout << iface.name << ".address_" << count << ".prefix=" << addr.prefix_length << "\n";
+                count++;
+            }
+        }
+        return;
+    }
+
     std::cout << "--- === Network Interface === ---\n";
     for (const auto& iface : interfaces) {
         std::cout << "Interface: " << iface.name
