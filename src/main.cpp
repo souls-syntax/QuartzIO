@@ -69,8 +69,10 @@ int main(int argc, char* argv[]) {
             opts.format = OutputFormat::Raw
         ;} else if (format_flag == "--json") {
             opts.format = OutputFormat::Json;
-        } 
-        
+        } else if (format_flag == "--test")
+        {
+            opts.run_speed_test = true;
+        }
     }
 
     

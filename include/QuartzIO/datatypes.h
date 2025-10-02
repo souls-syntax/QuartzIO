@@ -39,12 +39,26 @@ struct CpuInfo {
     double utilization = 0.0;
 };
 
+struct AddressInfo {
+    std::string family;
+    std::string address;
+    int prefix_length = 0;
+};
+
+struct NetworkInterface {
+    std::string name;
+    std::string mac_address;
+    std::string state;
+    std::vector<AddressInfo> addresses;
+};
+
 enum class OutputFormat {
     Default, // The normal pretty-printed table
     Raw,     // The simple key=value format
-    Json     // The JSON format
+    Json ,    // The JSON format
 };
 
 struct Options {
     OutputFormat format = OutputFormat::Default;
+    bool run_speed_test = false;
 };
