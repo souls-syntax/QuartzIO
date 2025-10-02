@@ -103,7 +103,7 @@ void CpuModule::run(const Options& opts) {
 
     while (std::getline(cpu_file, line)) {
         size_t colon_pos = line.find(':');
-        if (colon_pos = std::string::npos)
+        if (colon_pos == std::string::npos)
         {
             continue; // skipping lines without colon too much hassle or could be empty
         }
