@@ -15,43 +15,43 @@ inline int getuid() { return 0; }
 #endif
 //-------- AI edit ends ------//
 
-
 // Parsing the output of lsblk command.
 // The lsblk command we will be executing is "lsblk -d -n -o NAME,MODEL,SIZE"
-//result will be like
+// result will be like
 // zram0                                     3.7G
-//nvme0n1 SK hynix BC711 HFHS12GD******13M   476.9G
+// nvme0n1 SK hynix BC711 HFHS12GD******13M   476.9G
 
-std::vector<DiskInfo> parse_lsblk(const std::string& lsblk_output) {
+std::vector<DiskInfo> parse_lsblk(const std::string &lsblk_output)
+{
     std::vector<DiskInfo> disks;
     std::stringstream ss(lsblk_output);
     std::string line;
 
-    //read output lini by line.
+    // read output lini by line.
     while (std::getline(ss, line))
     {
         /* code */
 
-        //parsing line word by word
+        // parsing line word by word
         std::stringstream line_ss(line);
         DiskInfo current_disk;
 
-        //first word is device name
+        // first word is device name
         line_ss >> current_disk.name;
 
         // the last word is the size
-        //the middel part is the model which will result in "" if there is no such thing like vram.
+        // the middel part is the model which will result in "" if there is no such thing like vram.
         std::string temp_model;
         std::string current_word;
         std::vector<std::string> words;
 
-        //read all the reamining words in a vector
+        // read all the reamining words in a vector
         while (line_ss >> current_word)
         {
             /* code */
             words.push_back(current_word);
         }
-        //skip if no word
+        // skip if no word
         if (words.empty())
         {
             /* code */
@@ -61,13 +61,12 @@ std::vector<DiskInfo> parse_lsblk(const std::string& lsblk_output) {
         current_disk.size = words.back();
         words.pop_back();
 
-
         // whatever is left model name likely , join it with spaces.
         std::stringstream model_ss;
         for (size_t i = 0; i < words.size(); ++i)
         {
             /* code */
-            model_ss << words[i] << (i==words.size() -1 ? "" : " ");
+            model_ss << words[i] << (i == words.size() - 1 ? "" : " ");
         }
         current_disk.model = model_ss.str();
 
@@ -76,7 +75,8 @@ std::vector<DiskInfo> parse_lsblk(const std::string& lsblk_output) {
     return disks;
 }
 
-std::string trim(const std::string& s) {
+std::string trim(const std::string &s)
+{
     size_t first = s.find_first_not_of(" \t\n\r");
     if (std::string::npos == first)
     {
@@ -84,12 +84,12 @@ std::string trim(const std::string& s) {
         return s;
     }
     size_t last = s.find_last_not_of(" \t\n\r");
-    return s.substr(first, last -first+1);   
+    return s.substr(first, last - first + 1);
 }
 
-
 // ===SMART parser==== //
-void parse_smartctl(const std::string& smartctl_output, DiskInfo& disk) {
+void parse_smartctl(const std::string &smartctl_output, DiskInfo &disk)
+{
 
     std::stringstream ss(smartctl_output);
     std::string line;
@@ -100,7 +100,7 @@ void parse_smartctl(const std::string& smartctl_output, DiskInfo& disk) {
         std::stringstream line_ss(line);
         std::string key, value;
 
-        //seperating by colon (:)
+        // seperating by colon (:)
 
         size_t colon_pos = line.find(':');
         if (colon_pos != std::string::npos)
@@ -112,12 +112,12 @@ void parse_smartctl(const std::string& smartctl_output, DiskInfo& disk) {
             key = trim(key);
             value = trim(value);
 
-            if (key == "Model Number") disk.model = value;
+            if (key == "Model Number")
+                disk.model = value;
             else if (key == "Serial Number")
             {
                 /* code */
                 disk.serialNumber = value;
-
             }
             else if (key == "Firmware Version")
             {
@@ -144,100 +144,120 @@ void parse_smartctl(const std::string& smartctl_output, DiskInfo& disk) {
 }
 
 // ======Setting the flag for IModule abstraction transform=======//
-const char* StorageModule::getFlag() const {
+const char *StorageModule::getFlag() const
+{
     return "--storage";
 }
 
 // ======Printing The Values======= //
 
-void StorageModule::run(const Options& opts) {
+void StorageModule::run(const Options &opts)
+{
     std::string lsblk_output = exec("lsblk -d -n -o NAME,MODEL,SIZE");
 
     auto disks = parse_lsblk(lsblk_output);
 
-    for(auto& disk : disks) {
+    for (auto &disk : disks)
+    {
         bool smart_ok = true;
-        if (getuid() != 0) {
-        std::cout << "SMART data: (Not available, please run with sudo)\n";
-        smart_ok = false;
-        
-    } else {
-        try {
-            std::string smartctl_cmd = "smartctl -a /dev/" + disk.name + " 2>&1";
-            std::string smartctl_output = exec(smartctl_cmd.c_str());
-            if (smartctl_output.find("Permission denied") != std::string::npos ||
-                smartctl_output.find("Command not found") != std::string::npos)
-            {
-                /* code */
-                smart_ok = false
-            ;}
-            else {
-                parse_smartctl(smartctl_output, disk);
-            }
-        }
-        catch (...) {
+        if (getuid() != 0)
+        {
+            std::cout << "SMART data: (Not available, please run with sudo)\n";
             smart_ok = false;
         }
-    }
-
-        if (opts.format == OutputFormat::Json) {
-        std::cout << "{\n  \"disks\": [\n";
-        bool first_disk = true;
-        for (const auto& disk : disks) {
-            if (!first_disk) std::cout << ",\n";
-            std::cout << "    {\n";
-            std::cout << "      \"device\": \"" << disk.name << "\",\n";
-            std::cout << "      \"model\": \"" << disk.model << "\",\n";
-            std::cout << "      \"size\": \"" << disk.size << "\",\n";
-            std::cout << "      \"smart_available\": " << (smart_ok ? "true" : "false");
-            if (smart_ok) {
-                std::cout << ",\n";
-                std::cout << "      \"serial_number\": \"" << disk.serialNumber << "\",\n";
-                std::cout << "      \"firmware\": \"" << disk.firmwareVersion << "\",\n";
-                std::cout << "      \"health\": \"" << disk.health << "\",\n";
-                std::cout << "      \"temperature\": \"" << disk.temperature << "\",\n";
-                std::cout << "      \"power_on_hours\": \"" << disk.powerOnHours << "\"";
+        else
+        {
+            try
+            {
+                std::string smartctl_cmd = "smartctl -a /dev/" + disk.name + " 2>&1";
+                std::string smartctl_output = exec(smartctl_cmd.c_str());
+                if (smartctl_output.find("Permission denied") != std::string::npos ||
+                    smartctl_output.find("Command not found") != std::string::npos)
+                {
+                    /* code */
+                    smart_ok = false;
+                }
+                else
+                {
+                    parse_smartctl(smartctl_output, disk);
+                }
             }
-            std::cout << "\n    }";
-            first_disk = false;
-        }
-        std::cout << "\n  ]\n}\n";
-        return;
-    }
-
-    if (opts.format == OutputFormat::Raw) {
-        for (const auto& disk : disks) {
-            std::cout << disk.name << ".model=" << disk.model << "\n";
-            std::cout << disk.name << ".size=" << disk.size << "\n";
-            std::cout << disk.name << ".smart_available=" << (smart_ok ? "true" : "false") << "\n";
-            if (smart_ok) {
-                std::cout << disk.name << ".serial_number=" << disk.serialNumber << "\n";
-                std::cout << disk.name << ".firmware=" << disk.firmwareVersion << "\n";
-                std::cout << disk.name << ".health=" << disk.health << "\n";
-                std::cout << disk.name << ".temperature=" << disk.temperature << "\n";
-                std::cout << disk.name << ".power_on_hours=" << disk.powerOnHours << "\n";
+            catch (...)
+            {
+                smart_ok = false;
             }
         }
-        return;
-    }
 
-    // Default, pretty-printed output
-    for(const auto& disk : disks) {
-        std::cout << "========================================\n";
-        std::cout << std::left << std::setw(20) << "Drive:" << disk.name << "\n";
-        std::cout << std::left << std::setw(20) << "Model:" << disk.model << "\n";
-        std::cout << std::left << std::setw(20) << "Size:" << disk.size << "\n";
-
-        if (smart_ok) {
-            std::cout << "---------------- S.M.A.R.T. --------------\n";
-            std::cout << std::left << std::setw(20) << "Serial Number:" << disk.serialNumber << "\n";
-            std::cout << std::left << std::setw(20) << "Firmware:" << disk.firmwareVersion << "\n";
-            std::cout << std::left << std::setw(20) << "Health Status:" << disk.health << "\n";
-            std::cout << std::left << std::setw(20) << "Temperature:" << disk.temperature << "\n";
-            std::cout << std::left << std::setw(20) << "Power On Hours:" << disk.powerOnHours << "\n";
-        } else {
-             std::cout << std::left << std::setw(20) << "S.M.A.R.T. Status:" << "(Not available, run with sudo)\n";
+        if (opts.format == OutputFormat::Json)
+        {
+            std::cout << "{\n  \"disks\": [\n";
+            bool first_disk = true;
+            for (const auto &disk : disks)
+            {
+                if (!first_disk)
+                    std::cout << ",\n";
+                std::cout << "    {\n";
+                std::cout << "      \"device\": \"" << disk.name << "\",\n";
+                std::cout << "      \"model\": \"" << disk.model << "\",\n";
+                std::cout << "      \"size\": \"" << disk.size << "\",\n";
+                std::cout << "      \"smart_available\": " << (smart_ok ? "true" : "false");
+                if (smart_ok)
+                {
+                    std::cout << ",\n";
+                    std::cout << "      \"serial_number\": \"" << disk.serialNumber << "\",\n";
+                    std::cout << "      \"firmware\": \"" << disk.firmwareVersion << "\",\n";
+                    std::cout << "      \"health\": \"" << disk.health << "\",\n";
+                    std::cout << "      \"temperature\": \"" << disk.temperature << "\",\n";
+                    std::cout << "      \"power_on_hours\": \"" << disk.powerOnHours << "\"";
+                }
+                std::cout << "\n    }";
+                first_disk = false;
+            }
+            std::cout << "\n  ]\n}\n";
+            return;
         }
-        std::cout << "========================================\n";
+
+        if (opts.format == OutputFormat::Raw)
+        {
+            for (const auto &disk : disks)
+            {
+                std::cout << disk.name << ".model=" << disk.model << "\n";
+                std::cout << disk.name << ".size=" << disk.size << "\n";
+                std::cout << disk.name << ".smart_available=" << (smart_ok ? "true" : "false") << "\n";
+                if (smart_ok)
+                {
+                    std::cout << disk.name << ".serial_number=" << disk.serialNumber << "\n";
+                    std::cout << disk.name << ".firmware=" << disk.firmwareVersion << "\n";
+                    std::cout << disk.name << ".health=" << disk.health << "\n";
+                    std::cout << disk.name << ".temperature=" << disk.temperature << "\n";
+                    std::cout << disk.name << ".power_on_hours=" << disk.powerOnHours << "\n";
+                }
+            }
+            return;
+        }
+
+        // Default, pretty-printed output
+        for (const auto &disk : disks)
+        {
+            std::cout << "========================================\n";
+            std::cout << std::left << std::setw(20) << "Drive:" << disk.name << "\n";
+            std::cout << std::left << std::setw(20) << "Model:" << disk.model << "\n";
+            std::cout << std::left << std::setw(20) << "Size:" << disk.size << "\n";
+
+            if (smart_ok)
+            {
+                std::cout << "---------------- S.M.A.R.T. --------------\n";
+                std::cout << std::left << std::setw(20) << "Serial Number:" << disk.serialNumber << "\n";
+                std::cout << std::left << std::setw(20) << "Firmware:" << disk.firmwareVersion << "\n";
+                std::cout << std::left << std::setw(20) << "Health Status:" << disk.health << "\n";
+                std::cout << std::left << std::setw(20) << "Temperature:" << disk.temperature << "\n";
+                std::cout << std::left << std::setw(20) << "Power On Hours:" << disk.powerOnHours << "\n";
+            }
+            else
+            {
+                std::cout << std::left << std::setw(20) << "S.M.A.R.T. Status:" << "(Not available, run with sudo)\n";
+            }
+            std::cout << "========================================\n";
+        }
     }
 }
