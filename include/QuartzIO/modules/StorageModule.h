@@ -9,7 +9,8 @@ struct DiskInfo;
 class StorageModule : public IModule {
 public:
     const char* getFlag() const override;
-    void run() override;
+    
+    void run(const Options& opts) override;
 // private:
 //     std::vector<DiskInfo> parse_lsblk(const std::string& lsblk_output);
 //     void printDiskInfo();

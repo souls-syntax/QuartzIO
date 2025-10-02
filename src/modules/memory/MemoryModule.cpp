@@ -18,21 +18,22 @@ std::string format_kb(uintmax_t bytes) {
     while (d_bytes >= 1024 && i<3) {
         d_bytes /= 1024;
         i++;
-    }
+    } 
     std::stringstream ss;
     ss<< std::fixed << std::setprecision(2) << d_bytes << " " << suffix[i];
     return ss.str();
 }
 
-
 const char* MemoryModule::getFlag() const {
     return "--mem"
 ;}
 
-void MemoryModule::run() {
-    std::ifstream mem_file("/proc/meminfo");
+void MemoryModule::run(const Options& opts) {
+    
+    
+    std::ifstream mem_file("/proc/meminfo"); 
     if (!mem_file.is_open()) 
-    {
+    { 
         std::cerr << "Error: Could not open /proc/meminfo\n";
         return;
     }
@@ -48,12 +49,12 @@ void MemoryModule::run() {
         ss >> key >> value;
         key.pop_back(); //to remove colon
         mem_data[key] = value; // hmm skill is improving using map instead of just struct woohoo
-    }
-
-    uintmax_t total_mem = mem_data["MemTotal"];
-    uintmax_t free_mem = mem_data["MemFree"];
-    uintmax_t available_mem = mem_data["MemAvailable"];
-    uintmax_t used_mem = total_mem - available_mem;
+    }                                                    
+                                                         
+    uintmax_t total_mem = mem_data["MemTotal"];          
+    uintmax_t free_mem = mem_data["MemFree"];            
+    uintmax_t available_mem = mem_data["MemAvailable"];  
+    uintmax_t used_mem = total_mem - available_mem;      
 
     uintmax_t total_swap = mem_data["SwapTotal"];
     uintmax_t free_swap = mem_data["SwapFree"];
@@ -61,15 +62,41 @@ void MemoryModule::run() {
 
     //==printing the output//
 
+    if (opts.format == OutputFormat::Raw) {
+        std::cout << "RAM.Total=" << format_kb(total_mem) << "\n"
+                  << "RAM.Used=" << format_kb(used_mem) << "\n"
+                  << "RAM.Available=" << format_kb(available_mem) << "\n"
+                  << "Swap.Total=" << format_kb(total_swap) << "\n"
+                  << "Swap.Used=" << format_kb(used_swap) << "\n"
+                  << "Swap.Free=" << format_kb(free_swap) << "\n";
+        return;
+    }
+
+    if (opts.format == OutputFormat::Json) {
+        std::cout << "{\n"
+                  << "  \"RAM\": {\n"
+                  << "    \"Total\": \"" << format_kb(total_mem) << "\",\n"
+                  << "    \"Used\": \"" << format_kb(used_mem) << "\",\n"
+                  << "    \"Available\": \"" << format_kb(available_mem) << "\"\n"
+                  << "  },\n"
+                  << "  \"Swap\": {\n"
+                  << "    \"Total\": \"" << format_kb(total_swap) << "\",\n"
+                  << "    \"Used\": \"" << format_kb(used_swap) << "\",\n"
+                  << "    \"Free\": \"" << format_kb(free_swap) << "\"\n"
+                  << "  }\n"
+                  << "}\n";
+        return;
+    }
+
     std::cout << std::setw(8) << "RAM:"
               << std::setw(15) << "Total"
               << std::setw(15) << "Used"
               << std::setw(15) << "Available\n";
     
     std::cout << std::setw(8) << "" 
-              << std::setw(15) << "7.50 GB" 
-              << std::setw(15) << "5.38 GB" 
-              << std::setw(15) << "2.12 GB"  
+              << std::setw(15) << format_kb(total_mem)
+              << std::setw(15) << format_kb(used_mem)
+              << std::setw(15) << format_kb(available_mem) 
               << "\n\n";
 
     
@@ -79,9 +106,9 @@ void MemoryModule::run() {
               << std::setw(15) << "Free\n";
 
     std::cout << std::setw(8) << "" 
-              << std::setw(15) << "3.75 GB" 
-              << std::setw(15) << "2.04 GB" 
-              << std::setw(15) << "1.71 GB" 
+              << std::setw(15) << format_kb(total_swap)
+              << std::setw(15) << format_kb(used_swap)
+              << std::setw(15) << format_kb(free_swap)
               << "\n";
 
     std::cout << std::string(60, '-') << "\n";

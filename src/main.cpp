@@ -4,6 +4,7 @@
 #include <QuartzIO/modules/FileSystemModule.h>
 #include <QuartzIO/IModule.h>
 #include <QuartzIO/modules/MemoryModule.h>
+#include <QuartzIO/datatypes.h>
 
 #include <iostream>
 #include <vector>
@@ -53,6 +54,22 @@ int main(int argc, char* argv[]) {
         }
         return ret;
     }
+
+    // =====New Architecture ===== // Aren't I amazing making all things so modular you can't imagine the effort it takes in start.
+
+    Options opts;
+
+    if(argc>2) {
+        std::string format_flag = argv[2];
+        if (format_flag == "--raw")
+        {
+            opts.format = OutputFormat::Raw
+        ;} else if (format_flag == "--json") {
+            opts.format = OutputFormat::Json;
+        } 
+        
+    }
+
     
     // Main functionality engine starts.
     std::vector<std::unique_ptr<IModule>> modules;
@@ -68,7 +85,7 @@ int main(int argc, char* argv[]) {
         if (user_flag == module->getFlag())
         {
             /* code */
-            module->run();
+            module->run(opts);
             module_found = true;
             break;
         }   

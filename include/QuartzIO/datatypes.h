@@ -12,3 +12,14 @@ struct DiskInfo {
     std::string temperature;
     std::string powerOnHours;
 };
+
+
+enum class OutputFormat {
+    Default, // The normal pretty-printed table
+    Raw,     // The simple key=value format
+    Json     // The JSON format
+};
+
+struct Options {
+    OutputFormat format = OutputFormat::Default;
+};
