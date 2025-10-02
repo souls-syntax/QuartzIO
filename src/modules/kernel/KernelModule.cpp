@@ -64,16 +64,19 @@ void KernelModule::run(const Options& opts) {
     } else {
         info.kernel_version = "N/A";
     }
-
     info.uptime = format_uptime();
-
+    
+    std::ifstream file("/proc/uptime");
+    double raw_seconds;
+    file >> raw_seconds;
+    info.uptime_seconds = raw_seconds;
 
     //---The worst work printing logic in 3 ways aaah is there any smarter way---//
     
     if (opts.format == OutputFormat::Raw) {
         std::cout << "os.release=" << info.os_release << "\n";
         std::cout << "kernel.version=" << info.kernel_version << "\n";
-        std::cout << "system.uptime=" << info.uptime << "\n";
+        std::cout << "system.uptime=" << info.uptime_seconds << "\n";
         return;
     }
     
@@ -83,7 +86,7 @@ void KernelModule::run(const Options& opts) {
         std::cout << "{\n"
         << "  \"os_release\": \"" << info.os_release << "\",\n"
         << "  \"kernel_version\": \"" << info.kernel_version << "\",\n"
-        << "  \"uptime\": \"" << info.uptime << "\"\n"
+        << "  \"uptime\": \"" << info.uptime_seconds << "\"\n"
         << "}\n";
         return;
     }

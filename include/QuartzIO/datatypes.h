@@ -27,6 +27,7 @@ struct KernelInfo {
     std::string os_release;
     std::string kernel_version;
     std::string uptime;
+    uintmax_t      uptime_seconds;
 };
 
 enum class OutputFormat {
